@@ -1,0 +1,65 @@
+{
+  "name": "drinaluza",
+  "version": "0.0.1",
+  "engines": {
+    "node": "18"
+  },
+  "private": true,
+  "scripts": {
+    "i": "npm i --force",
+    "start": "NODE_ENV=local node --max-old-space-size=32000 main.js",
+    "start:prod": "NODE_ENV=production node --max-old-space-size=32000 main.js",
+    "start:prod-pm2": "npm run i && NODE_ENV=production pm2 start main.js -i max --node-args='--max-old-space-size=32000' -f",
+    "start:prod-pm2-monit": "npm run i && NODE_ENV=production pm2 start main.js -i max --node-args='--max-old-space-size=32000' -f && pm2 monit",
+    "restart": "pm2 delete all && npm run start",
+    "start:code": "code . && npm run start:dev",
+    "start:dev": "nodemon --max-old-space-size=32000 main.js",
+    "start:pullmain": "git pull origin main && npm run i && npm run start:code",
+    "start:pm2": "pm2 start main.js -i max --node-args='--max-old-space-size=32000' -f && pm2 monit",
+    "logs": "pm2 monit",
+    "stop": "pm2 stop all",
+    "delete": "pm2 delete all",
+    "git": "git add . && git commit -m",
+    "postgit": "git push && npm run start:dev",
+    "clean:a": "rm -f package-lock.json && rm -r -f node_modules",
+    "clean:ai": "npm run clean:a && npm run i",
+    "clean:air": "npm run clean:ai && npm run start:dev",
+    "update:a": "ncu -u && npm run clean:air"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ahmed-derbala/drinaluza"
+  },
+  "keywords": [
+    "moowatna"
+  ],
+  "author": "Ahmed Derbala <ahmed.derbala@esprit.tn>",
+  "dependencies": {
+    "bcrypt": "^5.1.0",
+    "compression": "^1.7.4",
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "ejs": "^3.1.8",
+    "express": "^5.0.0-beta.1",
+    "express-ejs-layouts": "^2.5.1",
+    "express-rate-limit": "^6.7.0",
+    "express-useragent": "^1.0.15",
+    "express-validator": "^6.14.3",
+    "express-winston": "^4.2.0",
+    "helmet": "^6.0.1",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^6.8.4",
+    "mongoose-unique-validator": "^3.1.0",
+    "morgan": "^1.10.0",
+    "socket.io": "^4.5.4",
+    "use-strict": "^1.0.1",
+    "winston": "^3.8.2",
+    "winston-mongodb": "^5.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20",
+    "npm-check-updates": "^16.6.2",
+    "pm2": "^5.2.2"
+  }
+}
