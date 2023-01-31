@@ -1,0 +1,1 @@
+please configure conf().app.langs

@@ -43,7 +43,14 @@ let app = {
         origin: "*",
         //methods: "GET,PUT,POST,DELETE,PATCH",
         credentials: true,
-    }
+    },
+    session: {
+        secret: packagejson.name,
+        saveUninitialized: true,
+        resave: true,
+        //cookie: { secure: true }//for production
+    },
+    langs:['en','fr']
 }
 
 
@@ -165,7 +172,7 @@ let createLoggerOptions = {
     ],
     exitOnError: false,
     levels,
-    silent:false//silent all transports
+    silent: false//silent all transports
 }
 
 

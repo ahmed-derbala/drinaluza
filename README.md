@@ -1,6 +1,5 @@
-# express-starter
-a clean project to start an express app faster. This made using node v18
-
+# drinaluza
+manage small business
 # features
 - javascript with nodejs v18 and express 5
 - ejs

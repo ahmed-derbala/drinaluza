@@ -4,8 +4,10 @@ const { check, query, param } = require('express-validator');
 const validatorCheck = require(`../../core/utils/error`).validatorCheck;
 const { authenticate } = require(`../../core/mw/auth`)
 const authService = require(`./auth.service`)
-const  conf  = require(`../../core/utils/loadConf`)
-
+const conf = require(`../../core/utils/loadConf`)
+const { errorHandler } = require('../../core/utils/error');
+const { getFlash, setFlashSuccess } = require(`../../core/helpers/flash`)
+const { emailFormatErrorTranslation } = require('../../core/translations/email.translation')
 
 
 
@@ -24,32 +26,53 @@ router.post('/signup',
   validatorCheck,
   */
   async (req, res) => {
-    // const infoErrorsObj = req.flash('infoErrors');
-    // const infoSubmitObj = req.flash('infoSubmit');
     return authService.signup({ user: req.body })
       .then(result => {
         //  return res.render('index/views/index',{ title: 'Express',message:null })
-        //req.flash('infoSubmit', 'Recipe has been added.')
+        setFlashSuccess(req, 'Signup success, please signin')
         if (req.query.view) return res.redirect(`${conf().app.frontend.url}/auth/signin`)
         return res.status(result.status).json(result)
       })
-      .catch(err => errorHandler({ err, res }))
+      .catch(err => {
+        console.log(err, "errrr");
+        req.flash('error', err.message)
+        //errorHandler({ err, res })
+        if (req.query.view) {
+          // res.render('auth/views/signup', { title: 'Singup', error:req.flash('error'),success:null });
+          return res.redirect(`${conf().app.frontend.url}/auth/signup`)
+        }
+      })
   })
 
+
+
 router.post('/signin',
-  /*[
-    check('user.email').isEmail(),
-    check('user.password').isString().notEmpty()
+  [
+    check('email').isEmail().withMessage((value, { req, location, path }) => {
+      return emailFormatErrorTranslation(req.lang)
+    }),
+    check('password').isString().notEmpty()
   ],
-  validatorCheck,*/
+  validatorCheck({ redirect: `${conf().app.frontend.url}/auth/signin` }),
   async (req, res) => {
-    return authService.signin({ user:req.body, req })
-      .then(result => {
-        if (req.query.view) return res.redirect(`${conf().app.frontend.url}/index`)
-        return res.status(result.status).json(result)
-      })
-      .catch(err => errorHandler({ err, req, res }))
+    try {
+      const result = await authService.signin({ user: req.body, req, res })
+      if (req.query.view) {
+        setFlashSuccess(req, 'Signin success')
+        return res.redirect(`${conf().app.frontend.url}/index`)
+      }
+      return res.status(result.status).json(result)
+    }
+    catch (err) {
+      errorHandler({ err, req, res, redirect: `${conf().app.frontend.url}/auth/signin` })
+    }
   })
+
+
+
+
+
+
 
 router.post('/signout',
   authenticate(),

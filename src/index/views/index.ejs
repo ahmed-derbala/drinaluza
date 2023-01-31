@@ -1,1 +1,14 @@
-index
+<% if(flash&&flash.success&&flash.success.length>0) { %>
+    <div class="col-8 alert alert-success" role="alert">
+        <%= flash.success %>
+    </div>
+    <% } %>
+
+        <% if(flash&&flash.error&&flash.error.length>0) { %>
+            <div class="col-8 alert alert-danger" role="alert">
+                <%= flash.error %>
+            </div>
+            <% } %>
+
+
+                index

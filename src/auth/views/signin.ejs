@@ -10,42 +10,57 @@
 </div>
 
 <div class="row justify-content-center">
- 
 
-                            <div class="col-8">
-
-                                <form action="/api/auth/signin?view=true" method="POST">
-                                    <div class="row g-3">
-
-                                        <div class="col-12">
-                                            <label for="email" class="form-label">Email</label>
-                                            <input type="email" name="email" id="email" class="form-control">
-                                        </div>
-
-                                        <div class="col-12">
-                                            <label for="name" class="form-label">Username</label>
-                                            <input type="text" name="username" id="name" class="form-control" required>
-                                        </div>
-
-                                        <div class="col-12">
-                                            <label for="description" class="form-label">Password</label>
-                                            <input type="text" name="password" id="password" class="form-control"
-                                                cols="30" rows="4" required>
-                                        </div>
-
-
-
-                                        <div class="col-12">
-                                            <button type="submit" class="btn btn-primary">Submit Recipe</button>
-                                        </div>
-
-                                    </div>
-
-                                </form>
+    <% if(flash&&flash.success&&flash.success.length>0) { %>
+        <div class="col-8 alert alert-success" role="alert">
+            <%= flash.success %>
+        </div>
+        <% } %>
+    
+            <% if(flash&&flash.error&&flash.error.length>0) { %>
+                <div class="col-8 alert alert-danger" role="alert">
+                    <%= flash.error %>
+                </div>
+                <% } %>
 
 
 
 
+
+                    <div class="col-8">
+
+                        <form action="/api/auth/signin?view=true" method="POST">
+                            <div class="row g-3">
+
+                                <div class="col-12">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" name="email" id="email" class="form-control">
+                                </div>
+
+                                <div class="col-12">
+                                    <label for="name" class="form-label">Username</label>
+                                    <input type="text" name="username" id="name" class="form-control" required>
+                                </div>
+
+                                <div class="col-12">
+                                    <label for="description" class="form-label">Password</label>
+                                    <input type="text" name="password" id="password" class="form-control" cols="30"
+                                        rows="4" required>
+                                </div>
+
+
+
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">Submit Recipe</button>
+                                </div>
 
                             </div>
+
+                        </form>
+
+
+
+
+
+                    </div>
 </div>

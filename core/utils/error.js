@@ -1,5 +1,7 @@
 const { validationResult } = require('express-validator');
 const { log } = require(`./log`)
+const conf = require(`./loadConf`)
+const { setFlashError, getFlashError } = require(`../helpers/flash`)
 
 /**
  * handle errors
@@ -9,15 +11,14 @@ const { log } = require(`./log`)
  * @param {Response} error.res response object
  * @param {Next} error.next next object
  */
-exports.errorHandler = ({ err, req, res, next }) => {
-    //console.log(err);
-    console.log('errorHandler...')
-    // console.error({ err,  })
+exports.errorHandler = ({ err, req, res, next, statusCode, redirect }) => {
+    //console.log('errorHandler...')
 
     if (typeof err == 'string') err = { message: err }
-    let statusCode = 500
+    if (!statusCode) statusCode = 500
     let errObject = {}
     errObject.level = 'error'
+    errObject.statusCode = statusCode
 
     if (err) {
         errObject.error = err
@@ -47,28 +48,51 @@ exports.errorHandler = ({ err, req, res, next }) => {
         errObject.req.user = req.user
     }
     log(errObject)
-    if (res) {
-        console.log('error returned with res');
-        return res.status(statusCode).json(errObject)
-    }
-    console.log('errObject no res');
-    return errObject
 
+    if (res) {
+        //check if the client is requesting a view
+        if (req.query?.view) {
+            setFlashError(req, errObject.message)
+            if (redirect && typeof redirect == 'string') {
+                return res.redirect(redirect)
+            }
+            return res.redirect(`${conf().app.frontend.url}/error`)
+        }
+        return res.status(statusCode).json(errObject)//client requesting api only
+    }
+    return errObject
 };
 
 /**
  * checking errors returned by validator, it should be called directly after validator on routes
  */
-exports.validatorCheck = (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        log({
-            label: 'VALIDATION_ERROR',
-            message: JSON.stringify(errors.errors),
-            req,
-            level: 'warn'
-        });
-        return res.status(422).json({ message: `validation error`, err: errors.errors });
+exports.validatorCheck = ({ redirect }) => {
+    return function (req, res, next) {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            const reqObject = {
+                ip: req.headers['x-forwarded-for'] || req.connection.remoteAddress,
+                user: req.user
+            }
+            const errorString = JSON.stringify(errors.errors)
+            log({
+                label: 'VALIDATION_ERROR',
+                message: errorString,
+                req: reqObject,
+                level: 'warn'
+            });
+
+            //check if the client is requesting a view
+            if (req.query?.view) {
+                setFlashError(req, errors.errors[0].msg)
+                if (redirect && typeof redirect == 'string') {
+                    return res.redirect(redirect)
+                }
+                return res.redirect(`${conf().app.frontend.url}/error`)
+            }
+
+            return res.status(422).json({ message: `validation error`, err: errors.errors });
+        }
+        return next();
     }
-    return next();
-};
+}

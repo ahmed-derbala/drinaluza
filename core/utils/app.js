@@ -1,5 +1,4 @@
 const express = require('express');
-const cookieParser = require('cookie-parser');
 const useragent = require('express-useragent');
 const expressWinston = require('express-winston');
 const winston = require('winston'); //logging module
@@ -13,6 +12,7 @@ const helmet = require('helmet')
 const { tidHandler } = require('../helpers/tid')
 const expressLayouts = require('express-ejs-layouts');
 const flash = require('connect-flash');
+const session = require('express-session');
 
 
 
@@ -20,22 +20,36 @@ let app = express();
 app.use(cors(conf().app.corsOptions))
 app.use('/', rateLimit(conf().app.apiLimiter))
 app.use(compression())
-app.use(helmet({
-  crossOriginResourcePolicy: false,
-}))
+app.use(helmet({ crossOriginResourcePolicy: false }))
 app.use(tidHandler)
 app.use(useragent.express());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
 app.disable('x-powered-by');
 app.disable('etag');
 app.use(morganLogger())
 
+//set language
+app.use((req, res, next) => {
+  // This reads the accept-language header
+  // and returns the language if found or false if not
+  const lang = req.acceptsLanguages(conf().app.langs)
+  if (lang) { // if found, attach it as property to the request
+      req.lang = lang
+  } else { // else set the default language
+      req.lang = 'en'
+  }
+  next()
+})
+
+
+//cookies and sessions
+app.use(session(conf().app.session));
+app.use(flash());
+
 
 
 // view engine setup
-app.use(flash());
 app.set('view engine', 'ejs');
 app.use(express.static(`${process.cwd()}/public`));
 app.set('views', [`${process.cwd()}/src`]);
