@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 console.clear()
 const conf = require(`./core/utils/loadConf`)
+//import * as conf from './core/utils/loadConf.js'
+
 
 if (conf().app.use_strict) require('use-strict')
 

@@ -7,10 +7,7 @@ const authService = require(`./auth.service`)
 const conf = require(`../../core/utils/loadConf`)
 const { errorHandler } = require('../../core/utils/error');
 const { getFlash, setFlashSuccess } = require(`../../core/helpers/flash`)
-const { emailFormatErrorTranslation } = require('../../core/translations/email.translation')
-
-
-
+const { emailInvalidTranslation } = require('../../translations/email.translation')
 
 
 router.post('/signup',

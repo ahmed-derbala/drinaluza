@@ -1,26 +1,23 @@
-exports.getFlash = (req) =>{
-    const success = req.flash('success');
-    const error = req.flash('error');
-    return {success,error}
+//flash messages can be used only once
+
+
+
+exports.getFlash = (req) => {
+    return { success: req.flash('success'), error: req.flash('error') }
 }
 
-
-exports.setFlashSuccess = (req,value) =>{
-    console.log('setFlashSuccess');
-    return req.flash('success',value)
+exports.setFlashSuccess = (req, value) => {
+    return req.flash('success', value)
 }
 
-exports.setFlashError = (req,value) =>{
-    console.log('setFlashError');
-    return req.flash('error',value)
-}
-
-exports.getFlashSuccess = (req) =>{
-    console.log('getFlashSuccess');
+exports.getFlashSuccess = (req) => {
     return req.flash('success')
 }
 
-exports.getFlashError = (req) =>{
-    console.log('getFlashError');
+exports.setFlashError = (req, value) => {
+    return req.flash('error', value)
+}
+
+exports.getFlashError = (req) => {
     return req.flash('error')
 }

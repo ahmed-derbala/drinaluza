@@ -1,4 +1,4 @@
-exports.emailFormatErrorTranslation=(lang)=>{
+exports.emailInvalidTranslation=(lang)=>{
     switch (lang){
         case 'fr':
             return 'Merci de fournir un email valide.'
